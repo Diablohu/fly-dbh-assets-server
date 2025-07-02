@@ -7,12 +7,20 @@ import { dirCache } from "./vars.js";
 
 let cleaning = false;
 const maxAge = 30 * 24 * 60 * 60_000; // 30 days
+// const maxAge = 30_000; // 30 seconds
+
+const fileTimeLastClean = path.resolve(dirCache, ".lasttime");
+let timeLastClean =
+    fs.existsSync(fileTimeLastClean) &&
+    Number(await fs.readFile(fileTimeLastClean, "utf-8"));
 
 // ============================================================================
 
 async function cleanup() {
     if (cleaning) return;
+    if (timeLastClean && Date.now() - timeLastClean < maxAge) return;
 
+    console.log("Cleaning...");
     cleaning = true;
 
     try {
@@ -30,7 +38,11 @@ async function cleanup() {
         console.error(err);
     }
 
+    timeLastClean = Date.now();
     cleaning = false;
+    await fs.writeFile(fileTimeLastClean, `${timeLastClean}`, "utf-8");
+
+    console.log("Cleaning complete!");
 }
 
 export default cleanup;
