@@ -1,0 +1,11 @@
+{
+    "apps": [
+        {
+            "name": "fly-dbh-assets-server",
+            "script": "main.js",
+            "max_memory_restart": "120M",
+            "out_file": ".logs/server.log",
+            "error_file": ".logs/server-error.log"
+        }
+    ]
+}

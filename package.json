@@ -3,12 +3,13 @@
     "type": "module",
     "version": "0.0.1",
     "scripts": {
-        "start": "node start.js",
-        "start:port": "cross-env AKIGUMO_PORT=8081 node start.js",
-        "dev": "cross-env NODE_ENV=development pm2 start start.js --watch && pm2 logs",
+        "start": "node main.js",
+        "start:port": "cross-env AKIGUMO_PORT=8081 node main.js",
+        "dev": "cross-env NODE_ENV=development pm2 start main.js --watch && pm2 logs",
         "up": "npx npm-check-updates -i"
     },
     "dependencies": {
+        "dayjs": "^1.11.13",
         "dotenv": "^17.0.1",
         "fs-extra": "^11.3.0",
         "koa": "^3.0.0",
@@ -22,6 +23,7 @@
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
+        "npm-run-script": "^0.0.4",
         "prettier": "^3.6.2"
     }
 }
