@@ -61,9 +61,7 @@ class App {
         this.app = new Koa();
         const app = this.app;
 
-        app.use(
-            helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })
-        );
+        app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } }));
         app.use(
             convert(
                 cash({
