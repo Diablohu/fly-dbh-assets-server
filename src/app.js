@@ -78,11 +78,7 @@ class App {
             if (cashed) return;
             if (ctx.method !== "GET") return await next();
 
-            try {
-                cleanup();
-            } catch (err) {
-                console.trace(err);
-            }
+            cleanup();
 
             const originalUrl = p[1];
             const filenameFromMap = filenameMap[originalUrl];
@@ -140,7 +136,7 @@ class App {
 
         if (!this.silent)
             // eslint-disable-next-line no-console
-            console.log(`Akigumo listening port ${port}`);
+            console.log(`FLY-DBH Assets Server listening port ${port}`);
     }
 }
 

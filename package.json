@@ -3,8 +3,8 @@
     "type": "module",
     "version": "0.0.1",
     "scripts": {
-        "start": "node main.js",
-        "start:port": "cross-env AKIGUMO_PORT=8081 node main.js",
+        "start": "node start.js",
+        "start-server": "cross-env FLY_DBH_ASSETS_SERVER_PORT=8081 node main.js",
         "dev": "cross-env NODE_ENV=development pm2 start main.js --watch && pm2 logs",
         "up": "npx npm-check-updates -i"
     },
@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
+        "inquirer": "^12.7.0",
         "npm-run-script": "^0.0.4",
         "prettier": "^3.6.2"
     }

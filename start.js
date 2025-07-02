@@ -14,8 +14,8 @@ async function main() {
             {
                 name: "开启服务器",
                 short: "\n🚧 开启服务器",
-                value: "npm:start",
-                description: "npm 命令: start\n",
+                value: "npm:start-server",
+                description: "npm 命令: start-server\n",
             },
             new Separator(" "),
             new Separator("── 🚀 线上发布 ──────────"),

@@ -15,15 +15,19 @@ async function cleanup() {
 
     cleaning = true;
 
-    const files = await fs.readdir(dirCache);
-    for (const filename of files) {
-        const file = path.resolve(dirCache, filename);
-        const stats = await fs.lstat(file);
-        const time = Math.max(stats.atimeMs, stats.ctimeMs);
-        if (Date.now() - time > maxAge) {
-            // console.log(filename, new Date(time));
-            await fs.unlink(file);
+    try {
+        const files = await fs.readdir(dirCache);
+        for (const filename of files) {
+            const file = path.resolve(dirCache, filename);
+            const stats = await fs.lstat(file);
+            const time = Math.max(stats.atimeMs, stats.ctimeMs);
+            if (Date.now() - time > maxAge) {
+                // console.log(filename, new Date(time));
+                await fs.unlink(file);
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 
     cleaning = false;

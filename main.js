@@ -7,7 +7,7 @@ const argv = yargs(hideBin(process.argv)).parse();
 
 const start = async () => {
     const app = new App({
-        port: process.env.AKIGUMO_PORT || argv.port || 8081,
+        port: process.env.FLY_DBH_ASSETS_SERVER_PORT || argv.port || 8081,
     });
     await app.start();
 };
