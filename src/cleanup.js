@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "node:path";
 
-import { dirCache } from "./vars.js";
+import { dirCacheImages } from "./vars.js";
 
 // ============================================================================
 
@@ -9,7 +9,7 @@ let cleaning = false;
 const maxAge = 30 * 24 * 60 * 60_000; // 30 days
 // const maxAge = 30_000; // 30 seconds
 
-const fileTimeLastClean = path.resolve(dirCache, ".lasttime");
+const fileTimeLastClean = path.resolve(dirCacheImages, ".lasttime");
 let timeLastClean =
     fs.existsSync(fileTimeLastClean) &&
     Number(await fs.readFile(fileTimeLastClean, "utf-8"));
@@ -24,9 +24,9 @@ async function cleanup() {
     cleaning = true;
 
     try {
-        const files = await fs.readdir(dirCache);
+        const files = await fs.readdir(dirCacheImages);
         for (const filename of files) {
-            const file = path.resolve(dirCache, filename);
+            const file = path.resolve(dirCacheImages, filename);
             const stats = await fs.lstat(file);
             const time = Math.max(stats.atimeMs, stats.ctimeMs);
             if (Date.now() - time > maxAge) {

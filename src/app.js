@@ -10,7 +10,7 @@ import cash from "koa-cash";
 import convert from "koa-convert";
 import { LRUCache } from "lru-cache";
 
-import { dirCache } from "./vars.js";
+import { dirCacheImages } from "./vars.js";
 import cleanup from "./cleanup.js";
 
 // ============================================================================
@@ -28,9 +28,9 @@ const filenameMap = {};
 const sendOptions = {
     maxage,
     immutable: true,
-    root: dirCache,
+    root: dirCacheImages,
 };
-const target = `https://cdn.sanity.io/images/${process.env.SANITY_PROJECT_ID}/${process.env.SANITY_DATASET}`;
+const targetImages = `https://cdn.sanity.io/images/${process.env.SANITY_PROJECT_ID}/${process.env.SANITY_DATASET}`;
 
 // ============================================================================
 
@@ -56,15 +56,16 @@ class App {
     }
 
     async create() {
-        if (process.env.NODE_ENV === "development") await fs.emptyDir(dirCache);
+        if (process.env.NODE_ENV === "development")
+            await fs.emptyDir(dirCacheImages);
 
         this.app = new Koa();
         const app = this.app;
 
-        app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } }));
-        // app.use(
-        //     helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })
-        // );
+        // app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } }));
+        app.use(
+            helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })
+        );
         app.use(
             convert(
                 cash({
@@ -86,21 +87,22 @@ class App {
             const originalUrl = p[1];
             const filenameFromMap = filenameMap[originalUrl];
             if (filenameFromMap) {
-                if (fs.existsSync(path.resolve(dirCache, filenameFromMap))) {
+                if (
+                    fs.existsSync(path.resolve(dirCacheImages, filenameFromMap))
+                ) {
                     return await send(ctx, filenameFromMap, sendOptions);
                 }
                 // 缓存文件名对应的文件不存在，删除缓存
                 delete filenameMap[originalUrl];
             }
 
-            const fullUrl = `${target}/${originalUrl}`;
+            const fullUrl = `${targetImages}/${originalUrl}`;
 
             // 检查本地文件是否有匹配
             for (const ext of [".jpg", ".jpeg", ".png", ".webp"]) {
                 const filename = md5(originalUrl) + ext;
-                const file = path.resolve(dirCache, filename);
+                const file = path.resolve(dirCacheImages, filename);
                 if (fs.existsSync(file)) {
-                    console.log("direct hit", filename);
                     filenameMap[originalUrl] = filename;
                     return await send(ctx, filename, sendOptions);
                 }
@@ -115,7 +117,7 @@ class App {
                     ""
                 ) || "jpg";
             const filename = md5(originalUrl) + "." + ext;
-            const destination = path.resolve(dirCache, filename);
+            const destination = path.resolve(dirCacheImages, filename);
 
             if (fs.existsSync(destination)) {
                 filenameMap[originalUrl] = filename;
