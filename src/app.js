@@ -62,6 +62,9 @@ class App {
         const app = this.app;
 
         app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } }));
+        // app.use(
+        //     helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })
+        // );
         app.use(
             convert(
                 cash({
@@ -91,6 +94,18 @@ class App {
             }
 
             const fullUrl = `${target}/${originalUrl}`;
+
+            // 检查本地文件是否有匹配
+            for (const ext of [".jpg", ".jpeg", ".png", ".webp"]) {
+                const filename = md5(originalUrl) + ext;
+                const file = path.resolve(dirCache, filename);
+                if (fs.existsSync(file)) {
+                    console.log("direct hit", filename);
+                    filenameMap[originalUrl] = filename;
+                    return await send(ctx, filename, sendOptions);
+                }
+            }
+
             const res = await fetch(fullUrl);
             if (res.status !== 200) return res;
 
