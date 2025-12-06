@@ -3,7 +3,7 @@
         {
             "name": "fly-dbh-assets-server",
             "script": "main.js",
-            "max_memory_restart": "240M",
+            "max_memory_restart": "190M",
             "out_file": ".logs/server.log",
             "error_file": ".logs/server-error.log"
         }
