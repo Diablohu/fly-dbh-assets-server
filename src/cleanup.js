@@ -1,7 +1,8 @@
 import fs from "fs-extra";
 import path from "node:path";
+import { glob } from "glob";
 
-import { dirCacheImages } from "./vars.js";
+import { dirCacheImages, tempfileExtname } from "./vars.js";
 
 // ============================================================================
 
@@ -38,6 +39,21 @@ async function cleanup() {
         console.error(err);
     }
 
+    // 移除所有临时文件
+    const tempfiles = await glob(`*${tempfileExtname}`, {
+        cwd: dirCacheImages,
+    });
+    // console.log({ tempfiles });
+    for (const tempfile of tempfiles) {
+        const file = path.resolve(dirCacheImages, tempfile);
+        try {
+            await fs.unlink(file);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // 标记本次清理时间
     timeLastClean = Date.now();
     cleaning = false;
     await fs.writeFile(fileTimeLastClean, `${timeLastClean}`, "utf-8");

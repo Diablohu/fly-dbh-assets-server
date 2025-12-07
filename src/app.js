@@ -10,7 +10,7 @@ import cash from "koa-cash";
 import convert from "koa-convert";
 import { LRUCache } from "lru-cache";
 
-import { dirCacheImages } from "./vars.js";
+import { dirCacheImages, tempfileExtname } from "./vars.js";
 import cleanup from "./cleanup.js";
 
 // ============================================================================
@@ -19,7 +19,7 @@ import cleanup from "./cleanup.js";
 const maxage = 1 * 365 * 24 * 60 * 60 * 1000;
 /** 基于访问量的缓存 */
 const cache = new LRUCache({
-    max: 500,
+    max: 50, // 最多缓存的条目数量
     maxAge: maxage,
 });
 /** 对照表: 访问地址 -> 文件名 */
@@ -124,6 +124,14 @@ class App {
                 return await send(ctx, filename, sendOptions);
             }
 
+            const tempfile = path.resolve(
+                dirCacheImages,
+                filename + tempfileExtname
+            );
+            if (fs.existsSync(tempfile)) {
+                await fs.unlink(tempfile);
+            }
+
             // console.log({
             //     fullUrl,
             //     headers: res.headers.get("content-type"),
@@ -133,10 +141,11 @@ class App {
             // });
 
             if (res.body) {
-                const fileStream = fs.createWriteStream(destination, {
+                const fileStream = fs.createWriteStream(tempfile, {
                     flags: "wx",
                 });
                 await finished(Readable.fromWeb(res.body).pipe(fileStream));
+                await fs.move(tempfile, destination, { overwrite: true });
             }
 
             filenameMap[originalUrl] = filename;
