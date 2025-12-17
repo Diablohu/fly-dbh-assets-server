@@ -28,11 +28,13 @@ async function cleanup() {
         const files = await fs.readdir(dirCacheImages);
         for (const filename of files) {
             const file = path.resolve(dirCacheImages, filename);
-            const stats = await fs.lstat(file);
-            const time = Math.max(stats.atimeMs, stats.ctimeMs);
-            if (Date.now() - time > maxAge) {
-                // console.log(filename, new Date(time));
-                await fs.unlink(file);
+            if (fs.existsSync(file)) {
+                const stats = await fs.lstat(file);
+                const time = Math.max(stats.atimeMs, stats.ctimeMs);
+                if (Date.now() - time > maxAge) {
+                    // console.log(filename, new Date(time));
+                    await fs.unlink(file);
+                }
             }
         }
     } catch (err) {
